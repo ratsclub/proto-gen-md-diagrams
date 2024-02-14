@@ -17,6 +17,7 @@
 package proto
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -69,7 +70,11 @@ func (rv *RpcVisitor) Visit(scanner Scanner, in *Line, namespace string) interfa
 	for scanner.Scan() {
 		line := scanner.ReadLine()
 		if strings.HasPrefix(line.Syntax, "option") {
-			optionName := line.Syntax[strings.Index(line.Syntax, "(")+1 : strings.Index(line.Syntax, ")")]
+			open_paren_idx := strings.Index(line.Syntax, "(") + 1
+			closing_paren_idx := strings.Index(line.Syntax, ")")
+
+			Log.Debug(fmt.Sprintf("Line: %s; Open paren: %d; Closing Paren: %d\n", line, open_paren_idx, closing_paren_idx))
+			optionName := line.Syntax[open_paren_idx:closing_paren_idx]
 			optionBody := ""
 			for scanner.Scan() {
 				oBody := scanner.ReadLine()

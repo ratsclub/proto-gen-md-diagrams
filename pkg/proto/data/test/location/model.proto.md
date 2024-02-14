@@ -40,8 +40,8 @@ class PhysicalLocation {
   + int32 longitude_degrees
   + int32 longitude_minutes
   + int32 longitude_seconds
-  + Map<string,  string> meta
-  + List<string> names
+  + Map~string,  string~ meta
+  + List~string~ names
 }
 PhysicalLocation --> `Address`
 PhysicalLocation --> `google.protobuf.Timestamp`

@@ -16,7 +16,9 @@
 
 package proto
 
-import "strings"
+import (
+	"strings"
+)
 
 // Annotation is an inline structure applicable only to attributes
 type Annotation struct {
@@ -32,11 +34,19 @@ func NewAnnotation(name string, value any) *Annotation {
 // ParseAnnotations is used for reading the annotation line and marshalling it into
 // the annotation structure.
 func ParseAnnotations(in string) []*Annotation {
-	Log.Debug("Processing Annotation")
+	Log.Debug("Processing Annotation\n")
 	out := make([]*Annotation, 0)
 	if strings.Contains(in, OpenBracket) && strings.Contains(in, ClosedBracket) {
 		annotationString := in[strings.Index(in, OpenBracket)+1 : strings.Index(in, ClosedBracket)]
-		split := strings.Split(strings.ReplaceAll(annotationString, SingleQuote, Empty), Space)
+
+		var split []string
+		split = strings.Split(strings.ReplaceAll(annotationString, SingleQuote, Empty), Space)
+
+		if len(split) < 3 {
+			Log.Debug("Missing item: " + in + "\n")
+			split = strings.Split(strings.ReplaceAll(annotationString, SingleQuote, Empty), "")
+		}
+
 		out = append(out, NewAnnotation(split[0], split[2]))
 	}
 	return out

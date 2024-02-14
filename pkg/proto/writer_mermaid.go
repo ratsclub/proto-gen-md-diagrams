@@ -52,10 +52,15 @@ func EnumToMermaid(e *Enum) string {
 
 // MessageToMermaid formats a Message into mermaid text
 func MessageToMermaid(m *Message) string {
-	out := fmt.Sprintf("\n%s\nclass %s {\n", m.Comment.ToMermaid(), m.Name)
-	for _, a := range m.Attributes {
-		out += fmt.Sprintf("  %s\n", a.ToMermaid())
+	out := fmt.Sprintf("\n%s\nclass %s { ", m.Comment.ToMermaid(), m.Name)
+
+	if len(m.Attributes) > 0 {
+		out += "\n"
+		for _, a := range m.Attributes {
+			out += fmt.Sprintf("  %s\n", a.ToMermaid())
+		}
 	}
+
 	out += "}\n"
 
 	// Handle Attribute Relationships

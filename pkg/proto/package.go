@@ -17,7 +17,6 @@
 package proto
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -101,9 +100,8 @@ func (p *Package) Read(debug bool) error {
 }
 
 func (p *Package) ToMarkdownWithDiagram() string {
-	out := fmt.Sprintf("# %s\n\n%s\n# Diagrams\n", p.Name, p.Comment)
+	var out string
 	out += "```mermaid\nclassDiagram\n"
 	out += PackageToMermaid(p)
-	out += "\n```"
 	return out
 }

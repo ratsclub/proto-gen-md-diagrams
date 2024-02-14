@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	mermaidClassDiagramTemplate = "### %s Diagram\n\n```mermaid\nclassDiagram\ndirection LR\n%s\n```"
+	mermaidClassDiagramTemplate = "%s\n"
 )
 
 func ToMermaid(title string, rt interface{}) string {
@@ -39,7 +39,10 @@ func ToMermaid(title string, rt interface{}) string {
 	case *Service:
 		out += ServiceToMermaid(t)
 	}
-	return fmt.Sprintf(mermaidClassDiagramTemplate, title, out)
+
+	md := fmt.Sprintf(mermaidClassDiagramTemplate, out)
+
+	return md
 }
 
 func EnumToMarkdown(enum *Enum, visualize bool) (body string, diagram string) {
@@ -73,7 +76,7 @@ func MessageToMarkdown(message *Message, visualize bool) (body string, diagram s
 		} else if a.Repeated {
 			label = "Repeated"
 		} else if a.Optional {
-		    label = "Optional"
+			label = "Optional"
 		}
 		attributeTable.Insert(a.Name, strconv.Itoa(a.Ordinal), strings.Join(a.Kind, Comma), label, a.Comment.ToMarkdownText())
 	}
@@ -82,7 +85,8 @@ func MessageToMarkdown(message *Message, visualize bool) (body string, diagram s
 		diagram = "\n" + ToMermaid(message.Name, message)
 	}
 
-	body = fmt.Sprintf("## Message: %s\n%s\n\n%s\n\n%s\n\n", message.Name, fmt.Sprintf(fqn, message.Qualifier), message.Comment.ToMarkdownBlockQuote(), attributeTable.String())
+	// body = fmt.Sprintf("## Message: %s\n%s\n\n%s\n\n%s\n\n", message.Name, fmt.Sprintf(fqn, message.Qualifier), message.Comment.ToMarkdownBlockQuote(), attributeTable.String())
+	// body = fmt.Sprintf("## Message: %s\n%s\n\n%s\n\n", message.Name, fmt.Sprintf(fqn, message.Qualifier), message.Comment.ToMarkdownBlockQuote())
 
 	for _, e := range message.Enums {
 		eBody, eDiagram := EnumToMarkdown(e, visualize)
@@ -114,10 +118,12 @@ func ServiceToMarkdown(s *Service, visualize bool) string {
 	}
 	table := methodTable.String()
 	if visualize {
-		table = ToMermaid(s.Name, s) + "\n\n" + table
+		// table = ToMermaid(s.Name, s) + "\n\n" + table
+		table = ToMermaid(s.Name, s)
 	}
 
-	return fmt.Sprintf("## Service: %s\n%s\n\n%s\n\n%s\n\n", s.Name, fmt.Sprintf(fqn, s.Qualifier), s.Comment.ToMarkdownBlockQuote(), table)
+	// return fmt.Sprintf("## Service: %s\n%s\n\n%s\n\n%s\n\n", s.Name, fmt.Sprintf(fqn, s.Qualifier), s.Comment.ToMarkdownBlockQuote(), table)
+	return fmt.Sprintf("%s\n\n", table)
 }
 
 func HandleEnums(enums []*Enum, visualize bool) (body string) {
@@ -181,8 +187,8 @@ func PackageToMarkDown(p *Package, visualize bool) string {
 			out += ServiceToMarkdown(s, visualize)
 		}
 	}
-	out += HandleEnums(p.Enums, visualize)
+	// out += HandleEnums(p.Enums, visualize)
 	out += HandleMessages(p.Messages, visualize)
-	out = fmt.Sprintf("# Package: %s\n\n%s\n\n%s\n\n%s\n\n%s\n%s\n", p.Name, p.Comment.ToMarkdownBlockQuote(), PackageFormatImports(p), PackageFormatOptions(p), out, footer)
+	out = fmt.Sprintf("# Package: %s\n\n%s\n\n%s\n\n%s\n\n```mermaid\nclassDiagram\ndirection LR\n\n%s```\n%s\n", p.Name, p.Comment.ToMarkdownBlockQuote(), PackageFormatImports(p), PackageFormatOptions(p), out, footer)
 	return out
 }

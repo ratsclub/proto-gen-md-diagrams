@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var directoryFlag *string
+var directoryFlag string
 var recursiveFlag *bool
 var debugFlag *bool
 var writeOutputFlag *bool
@@ -20,9 +20,10 @@ const (
 )
 
 func init() {
-	directoryFlag = flag.String("d", ".", "The directoryFlag to read.")
+	directoryFlag = "/home/victor/Projects/Work/dmg.provider-billing.sor/src/GRPC/out"
+	// directoryFlag = "/home/victor/Projects/Work/dmg.provider-billing.sor/src/GRPC/out/dmg/properties"
 	recursiveFlag = flag.Bool("r", true, "Read recursively.")
-	debugFlag = flag.Bool("debugFlag", false, "Enable debugging")
+	debugFlag = flag.Bool("debugFlag", true, "Enable debugging")
 	writeOutputFlag = flag.Bool("w", true, "Enable writing output")
 	visualizeFlag = flag.Bool("v", true, "Enable Visualization")
 	outputFlag = flag.String("o", ".", "Specifies the outputFlag directoryFlag, if not specified, the processor will write markdown in the proto directories.")
@@ -47,12 +48,11 @@ func Execute() {
 
 	SetDebug(*debugFlag)
 	logger := Log
-	logger.Infof("Reading Directory : %s\n", *directoryFlag)
 	logger.Infof("Recursively: %v\n", *recursiveFlag)
 
 	packages := make([]*Package, 0)
 
-	err := filepath.Walk(*directoryFlag, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(directoryFlag, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -72,7 +72,7 @@ func Execute() {
 	debugPackages(packages, logger)
 
 	if err != nil {
-		logger.Errorf("failed to process directoryFlag: %s with error: %v", *directoryFlag, err)
+		logger.Errorf("failed to process directoryFlag: %s with error: %v", directoryFlag, err)
 	}
 
 	for _, pkg := range packages {
